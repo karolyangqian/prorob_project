@@ -1,0 +1,32 @@
+version: '2.3'
+
+services:
+  ros2_humble_service:
+    # image: dustynv/ros:humble-ros-base-l4t-r32.7.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: prorob-ros2-humble:latest
+    container_name: ros2_humble_robot
+    restart: unless-stopped
+    network_mode: host
+    ipc: host
+    privileged: true
+    volumes:
+      - /dev:/dev
+      - ./prorob_ws:/root/prorob_ws
+      - /var/run/avahi-daemon/socket:/var/run/avahi-daemon/socket
+    tty: true
+    stdin_open: true
+
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+
+    command: >
+      bash -c "
+      source /opt/ros/humble/install/setup.bash &&
+      if [ -f /root/prorob_ws/install/setup.bash ]; then source /root/prorob_ws/install/setup.bash; fi &&
+      echo '=== ROS 2 & Workspace Sourced Successfully ===' &&
+      sleep infinity
+      "
+      
